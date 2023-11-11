@@ -6,15 +6,45 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "mysql"
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
+model Users {
+    id        String   @id @default(uuid())
     name      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([name])
+    @@index([id])
+}
+
+model Books {
+    id          String       @id @default(uuid())
+    title       String
+    description String
+    category    Categories[]
+    authorId    String
+    author      Authors      @relation(fields: [authorId], references: [id])
+
+    @@index([id])
+}
+
+model Categories {
+    id          String  @id @default(uuid())
+    name        String
+    description String
+    Books       Books?  @relation(fields: [booksId], references: [id])
+    booksId     String?
+
+    @@index([id])
+}
+
+model Authors {
+    id          String  @id @default(uuid())
+    name        String
+    description String
+    books       Books[]
+
+    @@index([id])
 }
